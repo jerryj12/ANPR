@@ -2,7 +2,7 @@ import string
 import easyocr
 
 # Initialize the OCR reader
-reader = easyocr.Reader(['en'], gpu=False)
+reader = easyocr.Reader(['en'], gpu=True)
 
 # Mapping dictionaries for character conversion
 dict_char_to_int = {'O': '0',
