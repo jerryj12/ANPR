@@ -5,14 +5,13 @@ import numpy as np
 import tempfile
 import os
 from ultralytics import YOLO
-import sort
 from util import get_car, read_license_plate, write_csv
 from scipy.interpolate import interp1d
 import ast
 import pandas as pd
 
 app = Flask(__name__,static_url_path='')
-
+run_with_ngrok(app)
 # Define the upload folder
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
