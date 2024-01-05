@@ -6,7 +6,7 @@ import numpy as np
 import tempfile
 import os
 from ultralytics import YOLO
-from util import get_car, read_license_plate, write_csv
+from util import read_license_plate, write_csv
 from scipy.interpolate import interp1d
 import ast
 import pandas as pd
@@ -16,9 +16,19 @@ run_with_ngrok(app)
 # Define the upload folder
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def record_video(video_path, duration=10):
+    cap = cv2.VideoCapture(0)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(video_path, fourcc, 20.0, (640, 480))
 
+    start_time = time.time()
+    while (time.time() - start_time) < duration:
+        ret, frame = cap.read()
+        out.write(frame)
 
-
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
 
 def process_video(input_path):
     # Define variables used in process_video
@@ -27,8 +37,6 @@ def process_video(input_path):
     # mot_tracker = sort.Sort()
     results = {}
     output_path = os.path.join('static', 'output_video.mp4')
-    file = request.files['file']
-    file.save(output_path)
     global input
     input = output_path
     video = cv2.VideoCapture(input)
@@ -108,9 +116,8 @@ def upload_file():
 
         if file:
             # Save the uploaded file to the static/assets folder
-            video_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-          #  file.save(video_path)
-
+            video_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output_video.mp4')
+            file.save(video_path)
             # Process the video
             processed_video_path, output_csv_path = process_video(video_path)
             file.save(processed_video_path)
@@ -232,11 +239,11 @@ class Visualize:
       video_path = input
       cap = cv2.VideoCapture(video_path)
 
-      fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Specify the codec
+      fourcc = cv2.VideoWriter_fourcc(*'VP90')  # Specify the codec
       fps = cap.get(cv2.CAP_PROP_FPS)
       width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
       height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-      out = cv2.VideoWriter(f'output.mp4', fourcc, fps, (width, height))
+      out = cv2.VideoWriter(f'output.webm', fourcc, fps, (width, height))
 
       license_plate = {}
       for car_id in np.unique(results['car_id']):
@@ -332,7 +339,17 @@ def download_csv():
     filename = 'test_interpolated.csv'
     return send_file(filename, as_attachment=True)
 
+@app.route('/record', methods=['POST'])
+def record():
+    video_name = f"output_video.mp4"
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], video_name)
 
+    record_video(video_path)
+    output_csv_path = 'test_interpolated.csv'
+    process_video(video_path)
+    return render_template('index.html',
+                                   video_path=video_path,
+                                   csv_path=output_csv_path)
 
 if __name__ == '__main__':
     app.run()
