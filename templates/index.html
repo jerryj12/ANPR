@@ -138,6 +138,10 @@
                     <input type="file" name="file" accept=".mp4">
                     <button class="btn btn-primary btn-shadow btn-lg" type="submit" onclick="load()">Upload</button>
                 </form>
+	        <h5>OR</h5>
+                <form action="/record" method="post">
+                    <button class="btn btn-primary btn-shadow btn-lg" type="submit">Record Video</button>
+                </form>
 			  <!-- <a class="btn btn-icon btn-lg" href="https://player.vimeo.com/video/33110953" data-featherlight="iframe" data-featherlight-iframe-allowfullscreen="true">
 			    	<span class="lnr lnr-film-play"></span>
 			    	Play Video
@@ -196,16 +200,20 @@
                 <div class="col-sm-5 img-bg d-flex shadow align-items-center img-2" style=" flex-wrap: wrap;
                 flex-direction: column;
                 justify-content: center;">
-                 <div style="width: 100%;">
+                 {% if not video_path %}
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <lottie-player src="https://lottie.host/5837f678-f734-4e9a-9df0-7b7f63aa9f6a/wFp6BVFUq7.json" background="##fff" speed="1" style="width: 300px; height: 300px" loop controls autoplay direction="1" mode="normal"></lottie-player>
+{% endif %}
+
+                  
+                  <!--{{ url_for('static', filename='output_video.mp4') }}-->
+                    {% if video_path %}       
+                           <div style="width: 100%;">
                     <video height="200" width="100%" controls>
                         <source src="{{ url_for('download_video') }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                   </div>  
-                  
-                  <!--{{ url_for('static', filename='output_video.mp4') }}-->
-                    {% if video_path %}       
-                           
 <div style="display: flex;
 justify-content: space-around;
 width: 100%;">
