@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import tempfile
 import os
+from pyngrok import ngrok
 from ultralytics import YOLO
 import sort
 from util import read_license_plate, write_csv
