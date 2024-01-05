@@ -127,7 +127,7 @@ a:hover {
   background-color: #f34949;
   border-color: #f34949;
   color: #fff;
-  border-radius: 30px;
+  /*border-radius: 30px;*/
   padding: 9px 25px;
   text-transform: capitalize;
   -webkit-transition: all 0.3s ease 0s;
