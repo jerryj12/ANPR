@@ -1,7 +1,7 @@
 import csv
 from flask import Flask, render_template, request, send_file, send_from_directory
 import cv2
-#from flask_ngrok import run_with_ngrok
+from flask_ngrok import run_with_ngrok
 import numpy as np
 import tempfile
 import os
@@ -12,7 +12,7 @@ import ast
 import pandas as pd
 
 app = Flask(__name__,static_url_path='')
-#run_with_ngrok(app)
+run_with_ngrok(app)
 # Define the upload folder
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -134,14 +134,6 @@ import numpy as np
 
 class Visualize:
 
-  # def _init_(self):
-    
-
-    
-
-
-    # self.data = __interpolate_bounding_boxes(data)
-
   def interpolate_bounding_boxes(self,data):
     # Extract necessary data columns from input data
     frame_numbers = np.array([int(row['frame_nmr']) for row in data])
@@ -217,7 +209,7 @@ class Visualize:
 
 
   def visual(self):
-      
+
       with open('results.csv', 'r') as file:
         reader = csv.DictReader(file)
         data = list(reader)
@@ -234,37 +226,35 @@ class Visualize:
 
 
 
-      results = pd.read_csv('./test_interpolated.csv')
+      results = pd.read_csv('test_interpolated.csv')
 
       # load video
       video_path = input
       cap = cv2.VideoCapture(video_path)
 
-      fourcc = cv2.VideoWriter_fourcc(*'VP80')  # Specify the codec
+      fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Specify the codec
       fps = cap.get(cv2.CAP_PROP_FPS)
       width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
       height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-      
-      out = cv2.VideoWriter(f'./output.webm', fourcc, fps, (width, height))
+      out = cv2.VideoWriter(f'output.mp4', fourcc, fps, (width, height))
+
       license_plate = {}
       for car_id in np.unique(results['car_id']):
           max_ = np.amax(results[results['car_id'] == car_id]['license_number_score'])
-          license_plate[car_id] = {'license_crop': None,
-                                  'license_number': results[(results['car_id'] == car_id) &
-                                                                  (results['license_number_score'] == max_)]['license_number'].iloc[0]}
+          license_plate[car_id] = {'license_number': results[(results['car_id'] == car_id) &
+                                                            (results['license_number_score'] == max_)]['license_number'].iloc[0]}
           cap.set(cv2.CAP_PROP_POS_FRAMES, results[(results['car_id'] == car_id) &
                                                   (results['license_number_score'] == max_)]['frame_nmr'].iloc[0])
-          
-          ret, frame = cap.read()
+#           ret, frame = cap.read()
 
-          x1, y1, x2, y2 = ast.literal_eval(results[(results['car_id'] == car_id) &
-                                                    (results['license_number_score'] == max_)]['license_plate_bbox'].iloc[0].replace('[ ', '[').replace('   ', ' ').replace('  ', ' ').replace(' ', ','))
+#           x1, y1, x2, y2 = ast.literal_eval(results[(results['car_id'] == car_id) &
+#                                                     (results['license_number_score'] == max_)]['license_plate_bbox'].iloc[0].replace('[ ', '[').replace('   ', ' ').replace('  ', ' ').replace(' ', ','))
 
-         # license_crop = frame[int(y1):int(y2), int(x1):int(x2), :]
-         # license_crop = cv2.resize(license_crop, (int((x2 - x1) * 400 / (y2 - y1)), 400))
+#           license_crop = frame[int(y1):int(y2), int(x1):int(x2), :]
+#           license_crop = cv2.resize(license_crop, (int((x2 - x1) * 400 / (y2 - y1)), 400))
 
 
-         # license_plate[car_id]['license_crop'] = license_crop
+#           license_plate[car_id]['license_crop'] = license_crop
 
 
       frame_nmr = -1
@@ -288,7 +278,7 @@ class Visualize:
 
 
                   # draw license plate
-                  
+
                   roi = frame[int(car_y1):int(car_y2), int(car_x1):int(car_x2)]
 
                   x1, y1, x2, y2 = ast.literal_eval(df_.iloc[row_indx]['license_plate_bbox'].replace('[ ', '[').replace('   ', ' ').replace('  ', ' ').replace(' ', ','))
@@ -299,6 +289,7 @@ class Visualize:
 
                   ### using general formula
                   ### set your own axis to make white boxes to put license numbers of cars.
+
                   text = license_plate[df_.iloc[row_indx]['car_id']]['license_number']
                   (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 4.3, 17)
                   # cy1 = np.abs(int(y1) - int((y2 - y1) * 0.5))
@@ -316,12 +307,11 @@ class Visualize:
                   cv2.putText(roi, text, (int(cx1 + 10), int(cy1 + (cy2 - cy1) // 1.5)),
                   cv2.FONT_HERSHEY_DUPLEX, font_size / 30, (0, 0, 0), 1, cv2.LINE_AA)
 
-              
+
               out.write(frame)
               frame = cv2.resize(frame, (1280, 720))
-              
 
-              
+
 
       out.release()
 
@@ -345,4 +335,5 @@ def download_csv():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+#debug=True
