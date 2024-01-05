@@ -1,11 +1,12 @@
 import csv
-from flask import Flask, redirect, render_template, request, send_file, send_from_directory
+import time
+from flask import Flask, redirect, render_template, request, send_file, send_from_directory, url_for
 import cv2
-from flask_ngrok import run_with_ngrok
 import numpy as np
 import tempfile
 import os
 from ultralytics import YOLO
+import sort
 from util import read_license_plate, write_csv
 from scipy.interpolate import interp1d
 import ast
