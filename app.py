@@ -238,7 +238,8 @@ class Visualize:
       # load video
       video_path = input
       cap = cv2.VideoCapture(video_path)
-
+      if os.path.exists('output.webm'):
+          os.remove('output.webm')
       fourcc = cv2.VideoWriter_fourcc(*'VP80')  # Specify the codec
       fps = cap.get(cv2.CAP_PROP_FPS)
       width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
