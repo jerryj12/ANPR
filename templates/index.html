@@ -135,9 +135,23 @@
 		    <h1 class="display-4 mb-5">Vehicles <br>Number Plate Detection!</h1>
 		    <div class="mb-2">
                 <form action="/" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file" accept=".mp4">
-                    <button class="btn btn-primary btn-shadow btn-lg" type="submit" onclick="load()">Upload</button>
-                </form>
+    <input type="file" name="file" accept=".mp4" onchange="enableUploadButton()">
+    <button id="uploadButton" class="btn btn-primary btn-shadow btn-lg" type="submit" onclick="load()" disabled>Upload</button>
+</form>
+
+<script>
+    function enableUploadButton() {
+        var fileInput = document.querySelector('input[type="file"]');
+        var uploadButton = document.getElementById('uploadButton');
+
+        if (fileInput.files.length > 0) {
+            uploadButton.removeAttribute('disabled');
+        } else {
+            uploadButton.setAttribute('disabled', 'disabled');
+        }
+    }
+</script>
+
 	        <h5>OR</h5>
                 <form action="/record" method="post">
                     <button class="btn btn-primary btn-shadow btn-lg" type="submit">Record Video</button>
