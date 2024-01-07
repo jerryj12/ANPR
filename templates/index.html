@@ -224,9 +224,10 @@
                     {% if video_path %}       
                            <div style="width: 100%;">
                     <video height="200" width="100%" controls>
-                        <source src="{{ url_for('download_video') }} type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+    <source src="{{ url_for('download_video') }}" type="video/webm">
+    Your browser does not support the video tag.
+</video>
+
                   </div>  
 <div style="display: flex;
 justify-content: space-around;
