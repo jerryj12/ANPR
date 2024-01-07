@@ -53,15 +53,15 @@ def process_video(input_path):
         if ret:
             results[frame_number] = {}
             detections = coco_model.track(frame, persist=True)[0]
+            try:
+                for detection in detections.boxes.data.tolist():
+                    x1, y1, x2, y2, track_id, score, class_id = detection
 
-            for detection in detections.boxes.data.tolist():
-                x1, y1, x2, y2, track_id, score, class_id = detection
+                    if int(class_id) in vehicles and score > 0.5:
+                        vehicle_bounding_boxes = []
+                        vehicle_bounding_boxes.append([x1, y1, x2, y2, track_id, score])
 
-                if int(class_id) in vehicles and score > 0.5:
-                    vehicle_bounding_boxes = []
-                    vehicle_bounding_boxes.append([x1, y1, x2, y2, track_id, score])
-
-                    try:
+                    
                         for bbox in vehicle_bounding_boxes:
                             roi = frame[int(y1):int(y2), int(x1):int(x2)]
                             license_plates = np_model(roi)[0]
@@ -91,8 +91,8 @@ def process_video(input_path):
                                     }
                                 }
 
-                    except:
-                        pass
+            except:
+                pass
 
     write_csv(results, './results.csv')
     video.release()
