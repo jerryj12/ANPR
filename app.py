@@ -1,6 +1,6 @@
 import csv
 import time
-from flask import Flask, redirect, render_template, request, send_file, send_from_directory, url_for
+from flask import Flask, redirect, render_template, request, send_file, send_from_directory, url_for, make_response
 import cv2
 import numpy as np
 import os
@@ -331,8 +331,16 @@ class Visualize:
 @app.route('/download_video')
 def download_video():
     filename = 'output.webm'
-    return send_from_directory('', filename,
-                               conditional=True)
+
+    # Create a response object
+    response = make_response(send_from_directory('', filename, conditional=True))
+
+    # Add cache headers to prevent caching
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+
+    return response
 
 # Route to download the CSV file
 @app.route('/download_csv')
