@@ -75,21 +75,21 @@ def process_video(input_path):
 
                                 np_text, np_score = read_license_plate(plate_treshold)
 
-                                if np_text is None:
-                                    np_text = 'Invalid'
-                                    np_score = '0'
+                                if np_text is not None:
+                                    # np_text = 'Invalid'
+                                    # np_score = '0'
 
-                                results[frame_number][track_id] = {
-                                    'car': {
-                                        'bbox': [x1, y1, x2, y2]
-                                    },
-                                    'license_plate': {
-                                        'bbox': [plate_x1, plate_y1, plate_x2, plate_y2],
-                                        'bbox_score': plate_score,
-                                        'text': np_text,
-                                        'text_score': np_score
+                                    results[frame_number][track_id] = {
+                                        'car': {
+                                            'bbox': [x1, y1, x2, y2]
+                                        },
+                                        'license_plate': {
+                                            'bbox': [plate_x1, plate_y1, plate_x2, plate_y2],
+                                            'bbox_score': plate_score,
+                                            'text': np_text,
+                                            'text_score': np_score
+                                        }
                                     }
-                                }
 
             except:
                 pass
