@@ -73,7 +73,8 @@ def process_video(input_path):
                                 plate_gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
                                 _, plate_treshold = cv2.threshold(plate_gray, 64, 255, cv2.THRESH_BINARY_INV)
 
-                                np_text, np_score = read_license_plate(plate_treshold)
+                                # np_text, np_score = read_license_plate(plate_treshold)
+                                np_text, np_score = read_license_plate(plate_gray)
 
                                 if np_text is not None:
                                     # np_text = 'Invalid'
