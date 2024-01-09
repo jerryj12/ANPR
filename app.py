@@ -63,8 +63,9 @@ def process_video(input_path):
                         # vehicle_bounding_boxes.append([x1, y1, x2, y2, track_id, score])
                         
                         # for bbox in vehicle_bounding_boxes:
-                            roi = frame[int(y1):int(y2), int(x1):int(x2)]
-                            license_plates = np_model(roi)[0]
+                        
+                        roi = frame[int(y1):int(y2), int(x1):int(x2)]
+                        license_plates = np_model(roi)[0]
 
                         for license_plate in license_plates.boxes.data.tolist():
                             plate_x1, plate_y1, plate_x2, plate_y2, plate_score, _ = license_plate
