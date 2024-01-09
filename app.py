@@ -59,39 +59,38 @@ def process_video(input_path):
                     x1, y1, x2, y2, track_id, score, class_id = detection
 
                     if int(class_id) in vehicles and score > 0.5:
-                        vehicle_bounding_boxes = []
-                        vehicle_bounding_boxes.append([x1, y1, x2, y2, track_id, score])
-
-                    
-                        for bbox in vehicle_bounding_boxes:
+                        # vehicle_bounding_boxes = []
+                        # vehicle_bounding_boxes.append([x1, y1, x2, y2, track_id, score])
+                        
+                        # for bbox in vehicle_bounding_boxes:
                             roi = frame[int(y1):int(y2), int(x1):int(x2)]
                             license_plates = np_model(roi)[0]
 
-                            for license_plate in license_plates.boxes.data.tolist():
-                                plate_x1, plate_y1, plate_x2, plate_y2, plate_score, _ = license_plate
-                                plate = roi[int(plate_y1):int(plate_y2), int(plate_x1):int(plate_x2)]
+                        for license_plate in license_plates.boxes.data.tolist():
+                            plate_x1, plate_y1, plate_x2, plate_y2, plate_score, _ = license_plate
+                            plate = roi[int(plate_y1):int(plate_y2), int(plate_x1):int(plate_x2)]
 
-                                plate_gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
-                                _, plate_treshold = cv2.threshold(plate_gray, 64, 255, cv2.THRESH_BINARY_INV)
+                            plate_gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
+                            _, plate_treshold = cv2.threshold(plate_gray, 64, 255, cv2.THRESH_BINARY_INV)
 
-                                # np_text, np_score = read_license_plate(plate_treshold)
-                                np_text, np_score = read_license_plate(plate_gray)
+                            # np_text, np_score = read_license_plate(plate_treshold)
+                            np_text, np_score = read_license_plate(plate_gray)
 
-                                if np_text is not None:
-                                    # np_text = 'Invalid'
-                                    # np_score = '0'
+                            if np_text is not None:
+                                # np_text = 'Invalid'
+                                # np_score = '0'
 
-                                    results[frame_number][track_id] = {
-                                        'car': {
-                                            'bbox': [x1, y1, x2, y2]
-                                        },
-                                        'license_plate': {
-                                            'bbox': [plate_x1, plate_y1, plate_x2, plate_y2],
-                                            'bbox_score': plate_score,
-                                            'text': np_text,
-                                            'text_score': np_score
-                                        }
+                                results[frame_number][track_id] = {
+                                    'car': {
+                                        'bbox': [x1, y1, x2, y2]
+                                    },
+                                    'license_plate': {
+                                        'bbox': [plate_x1, plate_y1, plate_x2, plate_y2],
+                                        'bbox_score': plate_score,
+                                        'text': np_text,
+                                        'text_score': np_score
                                     }
+                                }
 
             except:
                 pass
