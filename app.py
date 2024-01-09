@@ -1,6 +1,6 @@
 import csv
 import time
-from flask import Flask, redirect, render_template, request, send_file, send_from_directory, url_for, make_response
+from flask import Flask, redirect, render_template, request, send_file, send_from_directory, make_response
 import cv2
 import numpy as np
 import os
@@ -16,6 +16,7 @@ run_with_ngrok(app)
 # Define the upload folder
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 def record_video(video_path, duration=10):
     cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -106,6 +107,8 @@ def process_video(input_path):
 # Route to upload the video file
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    scroll_to_download = False  # Default value
+    csv_null = False
     if request.method == 'POST':
         if 'file' not in request.files:
             return render_template('index.html', error='No file part')
@@ -123,12 +126,24 @@ def upload_file():
             processed_video_path, output_csv_path = process_video(video_path)
             file.save(processed_video_path)
             output_csv_path = 'test_interpolated.csv'
+            with open(output_csv_path, 'r') as file:
+                reader = csv.reader(file)
+                data_length = len(list(reader))
+            
+    # Check if the length is less than 1
+            is_csv_empty = data_length < 2
+
+            if is_csv_empty:
+                csv_null = True
             # Return download links
+            scroll_to_download = True
+
             return render_template('index.html',
                                    video_path=processed_video_path,
-                                   csv_path=output_csv_path)
-    else:
-        return render_template('index.html')
+                                   csv_path=output_csv_path,
+                                   scroll_to_download=scroll_to_download,csv_null=csv_null)
+
+    return render_template('index.html', scroll_to_download=scroll_to_download)
 
 
 #Detector  visual
@@ -215,16 +230,16 @@ class Visualize:
 
     return interpolated_data
 
+   
 
   def visual(self):
-
       with open('results.csv', 'r') as file:
         reader = csv.DictReader(file)
         data = list(reader)
 
         # Interpolate missing data
         interpolated_data = self.interpolate_bounding_boxes(data)
-
+        #print(interpolated_data)    
         # Write updated data to a new CSV file
         header = ['frame_nmr', 'car_id', 'car_bbox', 'license_plate_bbox', 'license_plate_bbox_score', 'license_number', 'license_number_score']
         with open('test_interpolated.csv', 'w', newline='') as file:
