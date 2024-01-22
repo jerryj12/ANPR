@@ -12,7 +12,7 @@ import ast
 import pandas as pd
 
 app = Flask(__name__,static_url_path='')
-#run_with_ngrok(app)
+run_with_ngrok(app)
 # Define the upload folder
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -377,5 +377,5 @@ def record():
                                    csv_path=output_csv_path)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 #debug=True
